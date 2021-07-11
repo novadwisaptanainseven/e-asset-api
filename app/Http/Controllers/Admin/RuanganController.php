@@ -4,45 +4,46 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Admin\Kategori;
+use App\Models\Admin\Ruangan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
-class KategoriController extends Controller
+class RuanganController extends Controller
 {
-    // Get All Kategori
+    // Get All Ruangan
     public function get()
     {
-        $data = Kategori::orderBy("created_at", "DESC")->get();
+        $data = Ruangan::orderBy("created_at", "DESC")->get();
 
         foreach($data as $i => $d) {
             $d->no = $i + 1;
         }
 
         return response()->json([
-            "message" => "Berhasil mendapatkan semua data kategori",
+            "message" => "Berhasil mendapatkan semua data ruangan",
             "data" => $data
         ], 200);
     }
 
-    // Get Kategori By ID
+    // Get Ruangan By ID
     public function getById($id)
     {
-        $data = Kategori::find($id);
+        $data = Ruangan::find($id);
 
         if ($data) {
             return response()->json([
-                "message" => "Berhasil mendapatkan data kategori dengan id: $id",
+                "message" => "Berhasil mendapatkan data ruangan dengan id: $id",
                 "data" => $data
             ], 200);
         } else {
             return response()->json([
-                "message" => "Data kategori dengan id: $id tidak ditemukan",
+                "message" => "Data ruangan dengan id: $id tidak ditemukan",
             ], 404);
         }
     }
 
-    // Insert Kategori
+    // Insert Ruangan
     public function create(Request $req)
     {
         $user = Auth::user();
@@ -53,7 +54,7 @@ class KategoriController extends Controller
         $validator = Validator::make(
             $req->all(),
             [
-                "nama_kategori" => "required"
+                "nama_ruangan" => "required"
             ],
             $message
         );
@@ -68,19 +69,19 @@ class KategoriController extends Controller
         // Jika validasi berhasil
         // Insert data 
         $input_data = [
-            "nama_kategori" => $req->nama_kategori,
+            "nama_ruangan"  => $req->nama_ruangan,
             "user_created"  => $user->name,
             "user_updated"  => $user->name,
         ];
-        $kategori = Kategori::create($input_data);
+        $ruangan = Ruangan::create($input_data);
 
         return response()->json([
-            "message" => "Berhasil menambahkan data kategori",
+            "message" => "Berhasil menambahkan data ruangan",
             "input_data" => $input_data
         ], 201);
     }
 
-    // Edit Kategori
+    // Edit Ruangan
     public function update(Request $req, $id)
     {
         $user = Auth::user();
@@ -91,7 +92,7 @@ class KategoriController extends Controller
         $validator = Validator::make(
             $req->all(),
             [
-                "nama_kategori" => "required"
+                "nama_ruangan" => "required"
             ],
             $message
         );
@@ -105,36 +106,36 @@ class KategoriController extends Controller
 
         // Jika validasi berhasil
         // Edit data 
-        $kategori = Kategori::find($id);
-        if (!$kategori) {
+        $ruangan = Ruangan::find($id);
+        if (!$ruangan) {
             return response()->json([
-                "message" => "Data kategori dengan id: $id tidak ditemukan",
+                "message" => "Data ruangan dengan id: $id tidak ditemukan",
             ], 404);
         }
-        $kategori->nama_kategori = $req->nama_kategori ? $req->nama_kategori : $kategori->nama_kategori;
-        $kategori->user_updated = $user->name;
-        $kategori->save();
+        $ruangan->nama_ruangan = $req->nama_ruangan ? $req->nama_ruangan : $ruangan->nama_ruangan;
+        $ruangan->user_updated = $user->name;
+        $ruangan->save();
 
         return response()->json([
-            "message" => "Berhasil mengubah data kategori dengan id: $id",
-            "data_updated" => $kategori
+            "message" => "Berhasil mengubah data ruangan dengan id: $id",
+            "data_updated" => $ruangan
         ], 201);
     }
 
-    // Delete Kategori
+    // Delete Ruangan
     public function destroy($id)
     {
-        $kategori = Kategori::find($id);
-        if ($kategori) {
-            $kategori->delete();
+        $ruangan = Ruangan::find($id);
+        if ($ruangan) {
+            $ruangan->delete();
 
             return response()->json([
-                "message" => "Berhasil menghapus data kategori dengan id: $id",
-                "data_deleted" => $kategori
+                "message" => "Berhasil menghapus data ruangan dengan id: $id",
+                "data_deleted" => $ruangan
             ], 201);
         } else {
             return response()->json([
-                "message" => "Data kategori dengan id: $id tidak ditemukan",
+                "message" => "Data ruangan dengan id: $id tidak ditemukan",
             ], 404);
         }
     }

@@ -4,6 +4,7 @@
 
 use App\Http\Controllers\Admin\KategoriController;
 
+// Get All Kategori
 Route::get("kategori", [KategoriController::class, "get"]);
 
 // Get Kategori By ID

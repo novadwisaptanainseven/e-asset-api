@@ -23,6 +23,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        // URL API E-Pekerja
+        $url_api_epekerja = "https://disperkim.samarindakota.go.id/e-pekerja-api/api/";
+        config(["url_api_epekerja" => $url_api_epekerja]);
     }
 }

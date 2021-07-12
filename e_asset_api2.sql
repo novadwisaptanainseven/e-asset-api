@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 11, 2021 at 04:38 PM
+-- Generation Time: Jul 12, 2021 at 07:03 PM
 -- Server version: 10.4.18-MariaDB
 -- PHP Version: 8.0.3
 
@@ -29,37 +29,42 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `barang` (
   `id_barang` int(11) NOT NULL,
-  `no_barang` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `id_kategori` int(11) NOT NULL,
   `kode_barang` varchar(30) COLLATE utf8mb4_unicode_ci NOT NULL,
   `nama_barang` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `jenis_barang` enum('tetap','tidak-tetap') COLLATE utf8mb4_unicode_ci NOT NULL,
-  `no_register` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `no_register` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `merk` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `no_pabrik` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `ukuran` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `bahan` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `tahun_pembelian` int(11) DEFAULT NULL,
   `harga` int(11) DEFAULT NULL,
+  `satuan` varchar(40) COLLATE utf8mb4_unicode_ci NOT NULL,
   `jumlah_baik` int(11) NOT NULL DEFAULT 0,
   `jumlah_rusak` int(11) NOT NULL DEFAULT 0,
   `jumlah_barang` int(11) NOT NULL DEFAULT 0,
   `keterangan` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `foto` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `createdAt` datetime(3) NOT NULL DEFAULT current_timestamp(3),
-  `updatedAt` datetime(3) NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
   `deleted` tinyint(1) NOT NULL DEFAULT 0,
-  `user` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `file` text COLLATE utf8mb4_unicode_ci DEFAULT NULL
+  `user_created` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `user_updated` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `file` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `deleted_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `barang`
 --
 
-INSERT INTO `barang` (`id_barang`, `no_barang`, `kode_barang`, `nama_barang`, `jenis_barang`, `no_register`, `merk`, `no_pabrik`, `ukuran`, `bahan`, `tahun_pembelian`, `harga`, `jumlah_baik`, `jumlah_rusak`, `jumlah_barang`, `keterangan`, `foto`, `createdAt`, `updatedAt`, `deleted`, `user`, `file`) VALUES
-(1, '111', '', 'Laptop', 'tetap', '', 'MSI', '10-ab-10-cd', '10x10', 'Karbon', 2021, 8600900, 0, 0, 0, 'MSI MODERN 14 B10MW - 466ID I3-10110U SSD 256GB CARBON GRAY', 'public\\uploads\\barang\\1621667317118-laptop1.png', '2021-05-22 07:08:37.288', '2021-05-22 07:08:37.288', 0, '0', 'public\\uploads\\barang\\1621667317113-Ini file pdf.pdf'),
-(2, '112', '', 'Laptop', 'tetap', '', 'Dell XPS', '10-ab-10-cd', '10x10', 'Alumunium', 2021, 47225000, 0, 0, 0, 'DELL XPS 15 (Core i7-10750H)', 'public\\uploads\\barang\\1621667619467-laptop2.jpg', '2021-05-22 07:13:39.481', '2021-05-22 07:13:39.482', 0, '0', 'public\\uploads\\barang\\1621667619463-Ini file pdf.pdf'),
-(3, '113', '', 'Laptop', 'tetap', '', 'Lenovo', '10-ab-10-cd', '10x10', 'Alumunium', 2021, 27026998, 0, 0, 0, 'LENOVO LEGION 5P 15IMH05H - 6KID I7-10870H SSD 512GB RTX2060 144HZ\n', 'public\\uploads\\barang\\1621667774152-laptop3.png', '2021-05-22 07:16:14.163', '2021-05-22 07:16:14.164', 0, '0', 'public\\uploads\\barang\\1621667774149-Ini file pdf.pdf');
+INSERT INTO `barang` (`id_barang`, `id_kategori`, `kode_barang`, `nama_barang`, `jenis_barang`, `no_register`, `merk`, `no_pabrik`, `ukuran`, `bahan`, `tahun_pembelian`, `harga`, `satuan`, `jumlah_baik`, `jumlah_rusak`, `jumlah_barang`, `keterangan`, `foto`, `created_at`, `updated_at`, `deleted`, `user_created`, `user_updated`, `file`, `deleted_at`) VALUES
+(1, 6, '', 'Laptop', 'tetap', '', 'MSI', '10-ab-10-cd', '10x10', 'Karbon', 2021, 8600900, '', 0, 0, 0, 'MSI MODERN 14 B10MW - 466ID I3-10110U SSD 256GB CARBON GRAY', 'public\\uploads\\barang\\1621667317118-laptop1.png', '2021-05-21 23:08:37', '2021-07-12 09:00:16', 0, '0', NULL, 'public\\uploads\\barang\\1621667317113-Ini file pdf.pdf', NULL),
+(2, 6, '', 'Laptop', 'tetap', '', 'Dell XPS', '10-ab-10-cd', '10x10', 'Alumunium', 2021, 47225000, '', 0, 0, 0, 'DELL XPS 15 (Core i7-10750H)', 'public\\uploads\\barang\\1621667619467-laptop2.jpg', '2021-05-21 23:13:39', '2021-07-12 09:00:16', 0, '0', NULL, 'public\\uploads\\barang\\1621667619463-Ini file pdf.pdf', NULL),
+(3, 7, '', 'Laptop', 'tetap', '', 'Lenovo', '10-ab-10-cd', '10x10', 'Alumunium', 2021, 27026998, '', 0, 0, 0, 'LENOVO LEGION 5P 15IMH05H - 6KID I7-10870H SSD 512GB RTX2060 144HZ\n', 'public\\uploads\\barang\\1621667774152-laptop3.png', '2021-05-21 23:16:14', '2021-07-12 09:00:16', 0, '0', NULL, 'public\\uploads\\barang\\1621667774149-Ini file pdf.pdf', NULL),
+(4, 6, '12312321', 'Laptop Edit', 'tetap', NULL, 'Lenovo', '123123', '123', 'Polikarbonat', 2021, 3000000, 'Unit', 20, 0, 20, 'Lorem ipsum dolor sit amet', '', '2021-07-12 07:31:49', '2021-07-12 09:00:16', 0, NULL, 'Administrator', '', NULL),
+(6, 6, '123', 'Test hapus', 'tetap', NULL, 'Lenovo', '123123', '123', 'Polikarbonat', 2021, 3000000, 'Unit', 20, 0, 20, 'Lorem ipsum dolor sit amet', '', '2021-07-12 08:34:42', '2021-07-12 09:00:16', 0, 'Administrator', 'Administrator', '', NULL);
 
 -- --------------------------------------------------------
 
@@ -143,19 +148,29 @@ CREATE TABLE `barang_mutasi` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `barang_pemegang`
+-- Table structure for table `barang_pengguna`
 --
 
-CREATE TABLE `barang_pemegang` (
-  `id_barang_pemegang` int(11) NOT NULL,
+CREATE TABLE `barang_pengguna` (
+  `id_barang_pengguna` int(11) NOT NULL,
   `id_barang` int(11) NOT NULL,
   `id_pegawai` int(11) NOT NULL,
   `jumlah` int(11) NOT NULL,
   `keterangan` text DEFAULT NULL,
-  `id_user` int(11) NOT NULL,
+  `user_created` varchar(100) NOT NULL,
+  `user_updated` varchar(100) NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `barang_pengguna`
+--
+
+INSERT INTO `barang_pengguna` (`id_barang_pengguna`, `id_barang`, `id_pegawai`, `jumlah`, `keterangan`, `user_created`, `user_updated`, `created_at`, `updated_at`) VALUES
+(1, 1, 1, 1, 'dfdfd', 'admin', 'admin', '2021-07-12 14:33:19', '2021-07-12 14:33:19'),
+(2, 1, 2, 1, 'dfdfd', 'admin', 'admin', '2021-07-12 14:33:19', '2021-07-12 14:33:19'),
+(3, 2, 3, 1, 'dfdfdf', 'Nova', 'Nova', '2021-07-12 14:33:19', '2021-07-12 14:33:19');
 
 -- --------------------------------------------------------
 
@@ -289,7 +304,8 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (1, '2014_10_12_000000_create_users_table', 1),
 (2, '2014_10_12_100000_create_password_resets_table', 1),
 (3, '2019_08_19_000000_create_failed_jobs_table', 1),
-(4, '2019_12_14_000001_create_personal_access_tokens_table', 1);
+(4, '2019_12_14_000001_create_personal_access_tokens_table', 1),
+(5, '2021_07_12_163309_add_deleted_at_column', 2);
 
 -- --------------------------------------------------------
 
@@ -333,7 +349,9 @@ INSERT INTO `personal_access_tokens` (`id`, `tokenable_type`, `tokenable_id`, `n
 (6, 'App\\Models\\User', 1, 'admin', '452a50d4a1eead730744db02446774a51f7a7b09692529bb0e6f907d01da0455', '[\"*\"]', '2021-07-11 00:02:02', '2021-07-10 22:51:07', '2021-07-11 00:02:02'),
 (7, 'App\\Models\\User', 1, 'admin', '81d1e546dde5d17decb7e726e0a3bee40e32a7f4842f149dd9d4d9dba8ca8896', '[\"*\"]', '2021-07-11 04:25:23', '2021-07-11 03:24:32', '2021-07-11 04:25:23'),
 (8, 'App\\Models\\User', 1, 'admin', '26ffe4f8b6dd8125526673835f8ea0b0f128e0ce46a42dba17adcc9b1b4e8354', '[\"*\"]', '2021-07-11 05:57:11', '2021-07-11 04:01:20', '2021-07-11 05:57:11'),
-(10, 'App\\Models\\User', 1, 'admin', '4eb59edabaf4524fcf9d167b7aeec5cc03d41801d7cb807abe27c9ac564f409c', '[\"*\"]', '2021-07-11 06:38:12', '2021-07-11 06:02:00', '2021-07-11 06:38:12');
+(10, 'App\\Models\\User', 1, 'admin', '4eb59edabaf4524fcf9d167b7aeec5cc03d41801d7cb807abe27c9ac564f409c', '[\"*\"]', '2021-07-11 06:38:12', '2021-07-11 06:02:00', '2021-07-11 06:38:12'),
+(11, 'App\\Models\\User', 1, 'admin', 'f6eec9e21e13667564fce72d3da07aaaf2c35abed33600db2e63ac8faa60201a', '[\"*\"]', '2021-07-12 09:00:22', '2021-07-12 06:19:26', '2021-07-12 09:00:22'),
+(12, 'App\\Models\\User', 1, 'admin', '832b6abbd459d3f872007651821d275f129f44692bf5b1ae7a98320370f1aa2f', '[\"*\"]', '2021-07-12 06:49:23', '2021-07-12 06:48:57', '2021-07-12 06:49:23');
 
 -- --------------------------------------------------------
 
@@ -453,7 +471,8 @@ INSERT INTO `_prisma_migrations` (`id`, `checksum`, `finished_at`, `migration_na
 -- Indexes for table `barang`
 --
 ALTER TABLE `barang`
-  ADD PRIMARY KEY (`id_barang`);
+  ADD PRIMARY KEY (`id_barang`),
+  ADD KEY `id_kategori` (`id_kategori`);
 
 --
 -- Indexes for table `barang_detail`
@@ -478,12 +497,12 @@ ALTER TABLE `barang_mutasi`
   ADD KEY `id_user` (`id_user`);
 
 --
--- Indexes for table `barang_pemegang`
+-- Indexes for table `barang_pengguna`
 --
-ALTER TABLE `barang_pemegang`
-  ADD PRIMARY KEY (`id_barang_pemegang`),
+ALTER TABLE `barang_pengguna`
+  ADD PRIMARY KEY (`id_barang_pengguna`),
   ADD KEY `id_barang` (`id_barang`),
-  ADD KEY `id_user` (`id_user`);
+  ADD KEY `id_user` (`user_created`);
 
 --
 -- Indexes for table `failed_jobs`
@@ -575,7 +594,7 @@ ALTER TABLE `_prisma_migrations`
 -- AUTO_INCREMENT for table `barang`
 --
 ALTER TABLE `barang`
-  MODIFY `id_barang` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id_barang` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `barang_detail`
@@ -596,10 +615,10 @@ ALTER TABLE `barang_mutasi`
   MODIFY `id_barang_mutasi` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `barang_pemegang`
+-- AUTO_INCREMENT for table `barang_pengguna`
 --
-ALTER TABLE `barang_pemegang`
-  MODIFY `id_barang_pemegang` int(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `barang_pengguna`
+  MODIFY `id_barang_pengguna` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `failed_jobs`
@@ -635,13 +654,13 @@ ALTER TABLE `kendaraan_pindah`
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `personal_access_tokens`
 --
 ALTER TABLE `personal_access_tokens`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT for table `ruangan`
@@ -666,10 +685,22 @@ ALTER TABLE `users`
 --
 
 --
+-- Constraints for table `barang`
+--
+ALTER TABLE `barang`
+  ADD CONSTRAINT `fk_kategori` FOREIGN KEY (`id_kategori`) REFERENCES `kategori` (`id_kategori`) ON DELETE NO ACTION ON UPDATE CASCADE;
+
+--
 -- Constraints for table `barang_detail`
 --
 ALTER TABLE `barang_detail`
   ADD CONSTRAINT `barang_detail_ibfk_1` FOREIGN KEY (`id_barang`) REFERENCES `barang` (`id_barang`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `barang_pengguna`
+--
+ALTER TABLE `barang_pengguna`
+  ADD CONSTRAINT `fk_barang` FOREIGN KEY (`id_barang`) REFERENCES `barang` (`id_barang`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `kendaraan_pindah`

@@ -28,5 +28,8 @@ Route::put("barang-restore", [BarangController::class, "restoreAll"]);
 // Delete Permanent Barang
 Route::delete("barang-permanent-delete/{id}", [BarangController::class, "permanentDelete"]);
 
+// Delete Permanent All Barang
+Route::delete("barang-permanent-delete", [BarangController::class, "permanentDeleteAll"]);
+
 // Get Sampah Barang
 Route::get("barang-sampah", [BarangController::class, "getTrash"]);

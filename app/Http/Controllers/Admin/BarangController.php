@@ -25,7 +25,7 @@ class BarangController extends Controller
             ->get();
 
         // Get data pegawai from e-pekerja
-        $pegawai = Http::get(config('url_api_epekerja') . "pegawai/1")->json()["data"];
+        // $pegawai = Http::get(config('url_api_epekerja') . "pegawai/1")->json()["data"];
 
         foreach ($data as $i => $d) {
             $d->no = $i + 1;
@@ -53,6 +53,13 @@ class BarangController extends Controller
         // Get data barang by id
         $barang = Barang::find($id);
 
+        // Jika barang tidak ditemukan
+        if (!$barang) {
+            return response()->json([
+                "message" => "Data barang dengan id: $id tidak ditemukan",
+            ], 404);
+        }
+
         // Get pengguna barang
         $pengguna = BarangPengguna::where("id_barang", $barang->id_barang)->get();
 
@@ -64,16 +71,10 @@ class BarangController extends Controller
 
         $barang->pengguna = $pengguna;
 
-        if ($barang) {
-            return response()->json([
-                "message" => "Berhasil mendapatkan data barang dengan id: $id",
-                "data" => $barang
-            ], 200);
-        } else {
-            return response()->json([
-                "message" => "Data barang dengan id: $id tidak ditemukan",
-            ], 404);
-        }
+        return response()->json([
+            "message" => "Berhasil mendapatkan data barang dengan id: $id",
+            "data" => $barang
+        ], 200);
     }
 
     // Insert Barang
@@ -104,8 +105,6 @@ class BarangController extends Controller
                 "keterangan"      => "required",
                 "file"            => "mimes:pdf|max:5048",
                 "foto"            => "mimes:jpg,jpeg,png|max:5048",
-                "user_created"    => $user->name,
-                "user_updated"    => $user->name,
             ],
             $message
         );
@@ -272,14 +271,54 @@ class BarangController extends Controller
         ], 201);
     }
 
+    // Permanent Delete Barang
+    public function permanentDelete($id)
+    {
+        $barang = Barang::withTrashed()->where("id_barang", $id)->first();
+        if ($barang) {
+            $barang->forceDelete();
+            // Delete file dan foto
+            Storage::delete($barang->foto);
+            Storage::delete($barang->file);
+
+            return response()->json([
+                "message" => "Berhasil menghapus data barang dengan id: $id secara permanent",
+                "data_deleted" => $barang
+            ], 201);
+        } else {
+            return response()->json([
+                "message" => "Data barang dengan id: $id tidak ditemukan",
+            ], 404);
+        }
+    }
+
+    // Permanent Delete All Barang
+    public function permanentDeleteAll()
+    {
+        $barang = Barang::onlyTrashed()->get();
+
+        foreach ($barang as $k) {
+            Barang::onlyTrashed()->where("id_barang", $k->id_barang)->forceDelete();
+
+            // Delete file dan foto
+            Storage::delete($k->foto);
+            Storage::delete($k->file);
+        }
+
+        return response()->json([
+            "message" => "Berhasil menghapus semua sampah data barang secara permanent",
+            "data_deleted" => $barang
+        ], 201);
+    }
+
     // Soft Delete Barang
     public function softDelete($id)
     {
         $barang = Barang::find($id);
         if ($barang) {
             // Hapus foto dan file barang
-            Storage::delete($barang->foto);
-            Storage::delete($barang->file);
+            // Storage::delete($barang->foto);
+            // Storage::delete($barang->file);
 
             $barang->delete();
 
@@ -297,13 +336,17 @@ class BarangController extends Controller
     // Restore Barang By ID
     public function restoreById($id)
     {
-        Barang::withTrashed()->where("id_barang", $id)->restore();
-        $barang = Barang::find($id);
-
-        return response()->json([
-            "message" => "Berhasil memulihkan (restore) data barang dengan id: $id",
-            "data_restored" => $barang
-        ], 201);
+        $barang = Barang::withTrashed()->where("id_barang", $id);
+        if ($barang->restore()) {
+            return response()->json([
+                "message" => "Berhasil memulihkan (restore) data barang dengan id: $id",
+                "data_restored" => $barang->get()
+            ], 201);
+        } else {
+            return response()->json([
+                "message" => "Data barang dengan id: $id tidak ditemukan",
+            ], 404);
+        }
     }
 
     // Restore All Barang

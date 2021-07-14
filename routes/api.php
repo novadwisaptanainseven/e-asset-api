@@ -26,5 +26,8 @@ Route::prefix('admin/')->group(function () {
     });
 });
 
+// API Download
+include_once __DIR__ . "/download/index.php";
+
 // Authentication
 include_once __DIR__ . '/auth/index.php';

@@ -16,30 +16,31 @@ class BarangController extends Controller
     protected $tbl_barang = "barang";
     protected $tbl_kategori = "kategori";
     // Get All Barang
-    public function get()
+    public function get(Request $req)
     {
-        // Get data barang
-        $data = Barang::select("$this->tbl_barang.*", "$this->tbl_kategori.nama_kategori")
-            ->join("$this->tbl_kategori", "$this->tbl_kategori.id_kategori", "=", "$this->tbl_barang.id_kategori")
-            ->orderBy("$this->tbl_barang.created_at", "DESC")
-            ->get();
-
-        // Get data pegawai from e-pekerja
-        // $pegawai = Http::get(config('url_api_epekerja') . "pegawai/1")->json()["data"];
+        if ($req->jenis_barang) {
+            $data = Barang::select("$this->tbl_barang.*", "$this->tbl_kategori.nama_kategori")
+                ->join("$this->tbl_kategori", "$this->tbl_kategori.id_kategori", "=", "$this->tbl_barang.id_kategori")
+                ->orderBy("$this->tbl_barang.created_at", "DESC")
+                ->where("jenis_barang", $req->jenis_barang)
+                ->get();
+        } elseif ($req->kategori) {
+            $data = Barang::select("$this->tbl_barang.*", "$this->tbl_kategori.nama_kategori")
+                ->join("$this->tbl_kategori", "$this->tbl_kategori.id_kategori", "=", "$this->tbl_barang.id_kategori")
+                ->orderBy("$this->tbl_barang.created_at", "DESC")
+                ->where("$this->tbl_barang.id_kategori", $req->kategori)
+                ->get();
+        } else {
+            // Get data barang
+            $data = Barang::select("$this->tbl_barang.*", "$this->tbl_kategori.nama_kategori")
+                ->join("$this->tbl_kategori", "$this->tbl_kategori.id_kategori", "=", "$this->tbl_barang.id_kategori")
+                ->orderBy("$this->tbl_barang.created_at", "DESC")
+                ->get();
+        }
 
         foreach ($data as $i => $d) {
             $d->no = $i + 1;
-            // $pengguna = BarangPengguna::where("id_barang", $d->id_barang)->orderByDesc("id_barang_pengguna")->get();
-            // if (count($pengguna) > 0) {
-            //     foreach ($pengguna as $i => $p) {
-            //         $d->pengguna[$i] = Http::get(config('url_api_epekerja') . "pegawai/$p->id_pegawai")->json()["data"];
-            //     }
-            // } else {
-            //     $d->pengguna = null;
-            // }
         }
-
-        // $data = Barang::find(2)->pengguna;
 
         return response()->json([
             "message" => "Berhasil mendapatkan semua data barang",
@@ -51,7 +52,10 @@ class BarangController extends Controller
     public function getById($id)
     {
         // Get data barang by id
-        $barang = Barang::find($id);
+        $barang = Barang::select("$this->tbl_barang.*", "$this->tbl_kategori.nama_kategori")
+                ->join("$this->tbl_kategori", "$this->tbl_kategori.id_kategori", "=", "$this->tbl_barang.id_kategori")
+                ->where("$this->tbl_barang.id_barang", $id)
+                ->first();
 
         // Jika barang tidak ditemukan
         if (!$barang) {

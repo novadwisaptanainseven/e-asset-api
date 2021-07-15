@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class BarangController extends Controller
 {
@@ -53,9 +54,9 @@ class BarangController extends Controller
     {
         // Get data barang by id
         $barang = Barang::select("$this->tbl_barang.*", "$this->tbl_kategori.nama_kategori")
-                ->join("$this->tbl_kategori", "$this->tbl_kategori.id_kategori", "=", "$this->tbl_barang.id_kategori")
-                ->where("$this->tbl_barang.id_barang", $id)
-                ->first();
+            ->join("$this->tbl_kategori", "$this->tbl_kategori.id_kategori", "=", "$this->tbl_barang.id_kategori")
+            ->where("$this->tbl_barang.id_barang", $id)
+            ->first();
 
         // Jika barang tidak ditemukan
         if (!$barang) {
@@ -375,5 +376,31 @@ class BarangController extends Controller
             "message" => "Berhasil mendapatkan semua sampah data barang",
             "data_trash" => $barang_sampah
         ], 200);
+    }
+
+    // Generate QR Code
+    public function generateQrCode($id_barang)
+    {
+        $barang = Barang::find($id_barang);
+        if ($barang) {
+            // Jika barang ditemukan
+
+            // Generate QR Code
+            $qrCodeName = rand(0, 9999) . time() . "qr-code-$id_barang.png";
+            QrCode::size(250)
+                ->format('png')
+                ->generate(config('url_api_easset') . "cek-barang/$id_barang", storage_path("app/qrCodes/$qrCodeName"));
+
+            // Save to database tabel barang
+            Barang::where("id_barang", $id_barang)->update(["qr_code" => $qrCodeName]);
+
+            return response()->json([
+                "data" => "Generate QR Code Barang Berhasil"
+            ], 201);
+        } else {
+            return response()->json([
+                "message" => "Data barang dengan id: $id_barang tidak ditemukan",
+            ], 404);
+        }
     }
 }

@@ -26,5 +26,9 @@ class AppServiceProvider extends ServiceProvider
         // URL API E-Pekerja
         $url_api_epekerja = "https://disperkim.samarindakota.go.id/e-pekerja-api/api/";
         config(["url_api_epekerja" => $url_api_epekerja]);
+
+        // URL E-Asset
+        $url_api_easset = "http://localhost:5000/easset/";
+        config(["url_api_easset" => $url_api_easset]);
     }
 }

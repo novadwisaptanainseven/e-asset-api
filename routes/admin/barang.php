@@ -33,3 +33,6 @@ Route::delete("barang-permanent-delete", [BarangController::class, "permanentDel
 
 // Get Sampah Barang
 Route::get("barang-sampah", [BarangController::class, "getTrash"]);
+
+// Generate QR Code
+Route::get("barang-generate-qrcode/{id_barang}", [BarangController::class, "generateQrCode"]);

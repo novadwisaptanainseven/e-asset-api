@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,4 +16,14 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
+});
+
+Route::get('qr-code', function () {
+    // Testing QR Code
+    QrCode::size(250)
+            ->format('png')
+            ->generate('https://disperkim.samarindakota.go.id/epekerja', storage_path('app/qrCodes/qrcode.png'));
+    
+  return view('qr-code');
+    
 });

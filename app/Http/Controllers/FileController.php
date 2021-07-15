@@ -24,6 +24,15 @@ class FileController extends Controller
         return $this->downloads($fullpath, $message, $filename);
     }
 
+    // Get Qr Code
+    public function getQrCode($filename)
+    {
+        $fullpath = "/app/qrCodes/$filename";
+        $message = "Data Qr Code Tidak Ditemukan";
+
+        return $this->downloads($fullpath, $message, $filename);
+    }
+
     public function downloads($fullpath, $message, $filename)
     {
         if (file_exists(storage_path($fullpath))) {

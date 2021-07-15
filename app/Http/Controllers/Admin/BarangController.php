@@ -389,7 +389,8 @@ class BarangController extends Controller
             $qrCodeName = rand(0, 9999) . time() . "qr-code-$id_barang.png";
             QrCode::size(250)
                 ->format('png')
-                ->generate(config('url_api_easset') . "cek-barang/$id_barang", storage_path("app/qrCodes/$qrCodeName"));
+                // ->generate(config('url_api_easset') . "cek-barang/$id_barang", storage_path("app/qrCodes/$qrCodeName"));
+                ->generate("https://disperkim.samarindakota.go.id/epekerja", storage_path("app/qrCodes/$qrCodeName"));
 
             // Save to database tabel barang
             Barang::where("id_barang", $id_barang)->update(["qr_code" => $qrCodeName]);

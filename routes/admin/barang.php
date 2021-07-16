@@ -35,4 +35,4 @@ Route::delete("barang-permanent-delete", [BarangController::class, "permanentDel
 Route::get("barang-sampah", [BarangController::class, "getTrash"]);
 
 // Generate QR Code
-Route::get("barang-generate-qrcode/{id_barang}", [BarangController::class, "generateQrCode"]);
+Route::put("barang-generate-qrcode/{id_barang}", [BarangController::class, "generateQrCode"]);

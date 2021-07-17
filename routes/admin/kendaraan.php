@@ -32,3 +32,6 @@ Route::delete("kendaraan-permanent-delete", [KendaraanController::class, "perman
 
 // Get Sampah Kendaraan
 Route::get("kendaraan-sampah", [KendaraanController::class, "getTrash"]);
+
+// Generate QR Code
+Route::put("kendaraan-generate-qrcode/{id_kendaraan}", [KendaraanController::class, "generateQrCode"]);

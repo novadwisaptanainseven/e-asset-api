@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class KendaraanController extends Controller
 {
@@ -392,5 +393,32 @@ class KendaraanController extends Controller
             "message" => "Berhasil mendapatkan semua sampah data kendaraan",
             "data_trash" => $kendaraan_sampah
         ], 200);
+    }
+
+    // Generate QR Code
+    public function generateQrCode($id_kendaraan)
+    {
+        $kendaraan = Kendaraan::find($id_kendaraan);
+        if ($kendaraan) {
+            // Jika kendaraan ditemukan
+
+            // Generate QR Code
+            $qrCodeName = rand(0, 9999) . time() . "qr-code-$id_kendaraan.png";
+            QrCode::size(250)
+                ->format('png')
+                // ->generate(config('url_api_easset') . "cek-kendaraan/$id_kendaraan", storage_path("app/qrCodes/$qrCodeName"));
+                ->generate("https://disperkim.samarindakota.go.id/epekerja", storage_path("app/qrCodes/$qrCodeName"));
+
+            // Save to database tabel kendaraan
+            Kendaraan::where("id_kendaraan", $id_kendaraan)->update(["qr_code" => $qrCodeName]);
+
+            return response()->json([
+                "data" => "Generate QR Code Kendaraan Berhasil"
+            ], 201);
+        } else {
+            return response()->json([
+                "message" => "Data kendaraan dengan id: $id_kendaraan tidak ditemukan",
+            ], 404);
+        }
     }
 }

@@ -23,7 +23,7 @@ class KendaraanController extends Controller
         $data = Kendaraan::orderByDesc("created_at")->get();
 
         // Get data pegawai from e-pekerja
-        $pegawai = Http::get(config('url_api_epekerja') . "pegawai/1")->json()["data"];
+        // $pegawai = Http::get(config('url_api_epekerja') . "pegawai/1")->json()["data"];
 
         foreach ($data as $i => $d) {
             $d->no = $i + 1;
@@ -388,6 +388,17 @@ class KendaraanController extends Controller
     public function getTrash()
     {
         $kendaraan_sampah = Kendaraan::onlyTrashed()->get();
+
+        foreach ($kendaraan_sampah as $i => $d) {
+            $d->no = $i + 1;
+            $pengguna = KendaraanPengguna::where("id_kendaraan", $d->id_kendaraan)->orderByDesc("created_at")->first();
+            if ($pengguna) {
+                // Dapatkan data pegawai dari api epekerja
+                $d->pengguna = Http::get(config('url_api_epekerja') . "pegawai/$pengguna->id_pegawai")->json()["data"];
+            } else {
+                $d->pengguna = null;
+            }
+        }
 
         return response()->json([
             "message" => "Berhasil mendapatkan semua sampah data kendaraan",

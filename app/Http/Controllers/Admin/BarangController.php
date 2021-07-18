@@ -370,7 +370,14 @@ class BarangController extends Controller
     // Get Sampah Barang
     public function getTrash()
     {
-        $barang_sampah = Barang::onlyTrashed()->get();
+        $barang_sampah = Barang::onlyTrashed()
+        ->join("$this->tbl_kategori", "$this->tbl_kategori.id_kategori", "=", "$this->tbl_barang.id_kategori")
+        ->orderBy("$this->tbl_barang.deleted_at", "DESC")    
+        ->get();
+
+        foreach($barang_sampah as $i => $barang) {
+            $barang->no = $i + 1;
+        }
 
         return response()->json([
             "message" => "Berhasil mendapatkan semua sampah data barang",

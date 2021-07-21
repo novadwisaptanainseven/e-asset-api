@@ -13,7 +13,7 @@ Route::get("penempatan-barang/{id}", [PenempatanBarangController::class, "getByI
 Route::post("barang/{id_barang}/penempatan-barang", [PenempatanBarangController::class, "create"]);
 
 // Edit
-Route::post("penempatan-barang/{id}", [PenempatanBarangController::class, "update"]);
+Route::put("penempatan-barang/{id}", [PenempatanBarangController::class, "update"]);
 
 // Delete
 Route::delete("penempatan-barang/{id}", [PenempatanBarangController::class, "destroy"]);

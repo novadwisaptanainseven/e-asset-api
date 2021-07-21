@@ -17,6 +17,3 @@ Route::put("penempatan-barang/{id}", [PenempatanBarangController::class, "update
 
 // Delete
 Route::delete("penempatan-barang/{id}", [PenempatanBarangController::class, "destroy"]);
-
-// Delete All
-Route::delete("penempatan-barang/{id}", [PenempatanBarangController::class, "destroyAll"]);

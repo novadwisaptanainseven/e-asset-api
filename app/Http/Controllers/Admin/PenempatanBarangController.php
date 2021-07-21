@@ -11,6 +11,11 @@ use Illuminate\Support\Facades\Validator;
 
 class PenempatanBarangController extends Controller
 {
+    protected $PenempatanBarangModel;
+    public function __construct()
+    {
+        $this->PenempatanBarangModel = new PenempatanBarang();
+    }
     // Get All Daftar Barang Ruangan by ID Barang
     public function get($id_barang)
     {
@@ -30,8 +35,9 @@ class PenempatanBarangController extends Controller
             ->get();
 
         // Get total terpakai dan tidak terpakai
-        $baik_terpakai = PenempatanBarang::where("id_barang", $id_barang)
-            ->sum("jumlah");
+        $baik_terpakai = $this->PenempatanBarangModel->getBarangTerpakai($id_barang);
+        // $baik_terpakai = PenempatanBarang::where("id_barang", $id_barang)
+        //     ->sum("jumlah");
         $baik_tidak_terpakai = $data_barang->jumlah_baik - $baik_terpakai;
 
         $output = [
@@ -97,26 +103,26 @@ class PenempatanBarangController extends Controller
 
         // Cek apakah ada ruangan yang sama, jika ada maka tampilkan response error, karena setiap ruangan hanya diwakili oleh satu jenis/merk barang, maka barang yang sudah ada tidak dapat diinputkan ke dalam ruangan yang sama 
         $ruangan_sama = PenempatanBarang::where([
-            ["id_barang", "=", $id_barang],
-            ["id_ruangan", "=", $req->id_ruangan],
-        ])->first();
+            ["barang_ruangan.id_barang", "=", $id_barang],
+            ["barang_ruangan.id_ruangan", "=", $req->id_ruangan],
+        ])
+            ->join("ruangan", "ruangan.id_ruangan", "=", "barang_ruangan.id_ruangan")
+            ->first();
         if ($ruangan_sama) {
             return response()->json([
-                "errors" => "Barang sudah ada di ruangan dengan id: $req->id_ruangan, jika ada pembaruan jumlah penempatan di ruangan tersebut, maka hanya lakukan update pada data barang yang bersangkutan"
+                "errors" => "Barang sudah ada di ruangan $ruangan_sama->nama_ruangan, jika ada pembaruan jumlah penempatan di ruangan tersebut, maka hanya lakukan update pada data barang yang bersangkutan"
             ], 400);
         }
 
-        // Cek sisa barang
+        // Cek sisa barang tidak terpakai
         $data_barang = Barang::find($id_barang);
-        if ($req->jumlah > $data_barang->jumlah_baik) {
+        $baik_terpakai = $this->PenempatanBarangModel->getBarangTerpakai($id_barang);
+        $baik_tidak_terpakai = $data_barang->jumlah_baik - $baik_terpakai;
+        if ($req->jumlah > $baik_tidak_terpakai) {
             return response()->json([
                 "errors" => "Jumlah barang yang ditempatkan melebihi stok barang"
             ], 400);
         }
-
-        // Pengurangan Stok Barang
-        // $sisa_stok_barang_baik = $data_barang->jumlah_baik - $req->jumlah;
-        // $sisa_stok_total_barang = $sisa_stok_barang_baik + $data_barang->jumlah_rusak;
 
         // Insert data
         $input = [
@@ -130,19 +136,13 @@ class PenempatanBarangController extends Controller
         ];
         $insert = PenempatanBarang::create($input);
 
-        // // Update stok barang di tabel barang
-        // Barang::where("id_barang", $id_barang)->update([
-        //     "jumlah_baik" => $sisa_stok_barang_baik,
-        //     "jumlah_barang" => $sisa_stok_total_barang
-        // ]);
-
         return response()->json([
             "message" => "Berhasil menambahkan data barang ruangan dengan id barang: $id_barang",
             "input_data" => $input
         ], 201);
     }
 
-    // Update Barang Ruangan by ID Barang
+    // Update Barang Ruangan by ID
     public function update(Request $req, $id)
     {
         // Cek apakah data ditemukan
@@ -208,5 +208,24 @@ class PenempatanBarangController extends Controller
             "message" => "Berhasil memperbarui data barang ruangan dengan id barang ruangan: $id",
             "input_data" => $input
         ], 201);
+    }
+
+    // Delete Barang Ruangan by ID
+    public function destroy($id)
+    {
+        $barang_ruangan = PenempatanBarang::find($id);
+        if ($barang_ruangan) {
+
+            $barang_ruangan->delete();
+
+            return response()->json([
+                "message" => "Berhasil menghapus data barang ruangan dengan id: $id",
+                "data_deleted" => $barang_ruangan
+            ], 201);
+        } else {
+            return response()->json([
+                "message" => "Data barang ruangan dengan id: $id tidak ditemukan",
+            ], 404);
+        }
     }
 }

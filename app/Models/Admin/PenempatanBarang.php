@@ -12,4 +12,9 @@ class PenempatanBarang extends Model
     protected $guarded = [];
     protected $table = "barang_ruangan";
     protected $primaryKey = "id_barang_ruangan";
+
+    public function getBarangTerpakai($id)
+    {
+        return $this->query()->where("id_barang", $id)->sum("jumlah");
+    }
 }

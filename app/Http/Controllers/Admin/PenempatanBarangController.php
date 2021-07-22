@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Admin\Barang;
 use App\Models\Admin\PenempatanBarang;
+use App\Models\Admin\RWPenempatanBarang;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -12,10 +13,64 @@ use Illuminate\Support\Facades\Validator;
 class PenempatanBarangController extends Controller
 {
     protected $PenempatanBarangModel;
+    protected $tbl_barang = "barang";
+    protected $tbl_kategori = "kategori";
+    protected $tbl_ruangan = "ruangan";
+    protected $tbl_riwayat = "rw_brg_ruangan";
+
     public function __construct()
     {
         $this->PenempatanBarangModel = new PenempatanBarang();
     }
+
+    // Get Riwayat Penempatan Barang
+    public function getRiwayatPenempatanBarang() {
+        $riwayat = RWPenempatanBarang::select(
+            "$this->tbl_riwayat.*",
+            "$this->tbl_barang.nama_barang",
+            "$this->tbl_barang.merk",
+            "$this->tbl_ruangan.nama_ruangan",
+        )
+        ->join($this->tbl_barang, "$this->tbl_barang.id_barang", "=", "$this->tbl_riwayat.id_barang")
+        ->join($this->tbl_ruangan, "$this->tbl_ruangan.id_ruangan", "=", "$this->tbl_riwayat.id_ruangan")
+        ->orderByDesc("$this->tbl_riwayat.created_at")
+        ->get();
+
+        foreach($riwayat as $i => $r) {
+            $r->no = $i + 1;
+        }
+
+        return response()->json([
+            "message" => "Berhasil mendapatkan data riwayat penempatan barang",
+            "data" => $riwayat
+        ], 200);
+    }
+
+    // Get All Barang 
+    public function getAllBarang()
+    {
+        // Get data barang
+        $barang = Barang::select("$this->tbl_barang.*", "$this->tbl_kategori.nama_kategori")
+                ->join("$this->tbl_kategori", "$this->tbl_kategori.id_kategori", "=", "$this->tbl_barang.id_kategori")
+                ->orderBy("$this->tbl_barang.created_at", "DESC")
+                ->where("jenis_barang", "tetap")
+                ->get();
+
+        foreach($barang as $i => $b) {
+            $baik_terpakai = $this->PenempatanBarangModel->getBarangTerpakai($b->id_barang);
+            $baik_tidak_terpakai = $b->jumlah_baik - $baik_terpakai;
+
+            $b->no = $i + 1;
+            $b->jumlah_baik_terpakai = intval($baik_terpakai);
+            $b->jumlah_baik_tidak_terpakai = $baik_tidak_terpakai;
+        }
+
+        return response()->json([
+            "message" => "Berhasil mendapatkan semua data barang",
+            "data" => $barang
+        ], 200);
+    }
+
     // Get All Daftar Barang Ruangan by ID Barang
     public function get($id_barang)
     {
@@ -136,6 +191,17 @@ class PenempatanBarangController extends Controller
         ];
         $insert = PenempatanBarang::create($input);
 
+        // Insert Riwayat penempatan barang
+        RWPenempatanBarang::create([
+            "penginput" => $user->name,
+            "aktivitas" => "Ditambahkan",
+            "id_ruangan" => $req->id_ruangan,
+            "id_barang" => $id_barang,
+            "jumlah" => $req->jumlah,
+            "tgl_penempatan" => $req->tgl_penempatan,
+            "keterangan" => $req->keterangan,
+        ]);
+
         return response()->json([
             "message" => "Berhasil menambahkan data barang ruangan dengan id barang: $id_barang",
             "input_data" => $input
@@ -166,7 +232,6 @@ class PenempatanBarangController extends Controller
                 "jumlah"      => "required",
                 "tgl_update"  => "required",
                 "keterangan"  => "required",
-                "jumlah_baik" => "required"
             ],
             $message
         );
@@ -199,10 +264,17 @@ class PenempatanBarangController extends Controller
         ];
         $update = PenempatanBarang::where("id_barang_ruangan", $id)->update($input);
 
-        // // Update stok barang di tabel barang
-        // Barang::where("id_barang", $barang_ruangan->id_barang)->update([
-        //     "jumlah_baik" => $sisa_stok_barang_baik,
-        // ]);
+        // Insert Riwayat penempatan barang
+        RWPenempatanBarang::create([
+            "penginput"      => $user->name,
+            "aktivitas"      => "Diupdate",
+            "id_ruangan"     => $req->id_ruangan,
+            "id_barang"      => $barang_ruangan->id_barang,
+            "jumlah"         => $req->jumlah,
+            "tgl_penempatan" => $barang_ruangan->tgl_penempatan,
+            "tgl_update"     => $req->tgl_update,
+            "keterangan"     => $req->keterangan,
+        ]);
 
         return response()->json([
             "message" => "Berhasil memperbarui data barang ruangan dengan id barang ruangan: $id",
@@ -213,10 +285,25 @@ class PenempatanBarangController extends Controller
     // Delete Barang Ruangan by ID
     public function destroy($id)
     {
+        $user = Auth::user();
+
         $barang_ruangan = PenempatanBarang::find($id);
         if ($barang_ruangan) {
 
             $barang_ruangan->delete();
+
+            // Insert Riwayat penempatan barang
+            RWPenempatanBarang::create([
+            "penginput"      => $user->name,
+            "aktivitas"      => "Dihapus",
+            "id_ruangan"     => $barang_ruangan->id_ruangan,
+            "id_barang"      => $barang_ruangan->id_barang,
+            "jumlah"         => $barang_ruangan->jumlah,
+            "tgl_penempatan" => $barang_ruangan->tgl_penempatan,
+            "tgl_update"     => $barang_ruangan->tgl_update,
+            "tgl_hapus"      => date("Y-m-d"),
+            "keterangan"     => $barang_ruangan->keterangan,
+        ]);
 
             return response()->json([
                 "message" => "Berhasil menghapus data barang ruangan dengan id: $id",
